@@ -1,0 +1,12 @@
+version: '3.2'
+services:
+  apache:
+    image: albertovfn/apache-php-minimal-magento2
+    ports:
+     - "81:80"
+    volumes:
+     - type: bind
+       source: ./www
+       target: /var/www/html
+       consistency: delegated
+       
