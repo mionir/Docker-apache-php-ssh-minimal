@@ -5,8 +5,12 @@ LABEL php_version="7.0.32"
 LABEL description="Magento 2.1.17 with PHP 7.0.32"
 
 ENV INSTALL_DIR /var/www/html
+ENV PORT 80
+ENV SSH_PORT 2222
+EXPOSE 2222 80
 
-RUN requirements="libpng12-dev libmcrypt-dev libmcrypt4 libcurl3-dev libfreetype6 libjpeg-turbo8 libjpeg-turbo8-dev libpng12-dev libfreetype6-dev libicu-dev libxslt1-dev unzip openssh-server" \
+#nano adicionado para faciliar qualquer teste
+RUN requirements="libpng12-dev libmcrypt-dev libmcrypt4 libcurl3-dev libfreetype6 libjpeg-turbo8 libjpeg-turbo8-dev libpng12-dev libfreetype6-dev libicu-dev libxslt1-dev unzip openssh-server nano" \
     && apt-get update \
     && apt-get install -y $requirements \
     && rm -rf /var/lib/apt/lists/* \
@@ -23,12 +27,15 @@ RUN requirements="libpng12-dev libmcrypt-dev libmcrypt4 libcurl3-dev libfreetype
     && apt-get purge --auto-remove -y $requirementsToRemove
 	
 	
+#copiando arquivo de inicializacao
 COPY init_container.sh /bin/	
-
+#limpando clrf do windows
+RUN sed -i -e 's/\r$//' /bin/init_container.sh
+#corrigindo permissoes e configurando usuario ssh
 RUN chmod 755 /bin/init_container.sh \    
     && echo "root:Docker!" | chpasswd 
 	
-# setup default site
+# configuracao sshd
 RUN rm -f /etc/ssh/sshd_config	 
 COPY sshd_config /etc/ssh/
 COPY ssh_setup.sh /tmp
@@ -40,9 +47,6 @@ RUN echo "memory_limit=2048M" > /usr/local/etc/php/conf.d/memory-limit.ini
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PORT 80
-ENV SSH_PORT 2222
-EXPOSE 2222 80
 COPY sshd_config /etc/ssh/
 
 WORKDIR $INSTALL_DIR
