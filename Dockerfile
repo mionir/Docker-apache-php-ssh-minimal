@@ -1,8 +1,9 @@
 FROM quay.io/alexcheng1982/apache2-php7:7.0.32
 
-LABEL maintainer="alexcheng1982@gmail.com"
+LABEL based_on="alexcheng/magento2"
+LABEL maintainer="alberto.v.f.n@gmail.com"
 LABEL php_version="7.0.32"
-LABEL description="Magento 2.1.17 with PHP 7.0.32"
+LABEL description="Apache with PHP 7.0.32 and SSH"
 
 ENV INSTALL_DIR /var/www/html
 ENV PORT 80
